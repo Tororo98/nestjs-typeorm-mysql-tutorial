@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/typeorm/entities/User';
 import { DeleteStatusResponse, PatchStatusResponse, PostStatusResponse } from 'src/users/schemas/user.response';
 import { ErrorHandler } from 'src/utils/errors/errorhandler';
-import { CreateUserParams, UpdateUserParams } from 'src/utils/types';
+import { CreateUserParams, CreateUserProfileParams, UpdateUserParams } from 'src/utils/types';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -20,7 +20,7 @@ export class UsersService {
         let newUser = this.userRepository.create({ ...userDetails, createdAt: new Date()});
         await this.userRepository.save(newUser);
 
-        return { status: 'Success' };
+        return { status: 'User Created' };
     }
 
     async updateUser(id: number, updateUserDetail: UpdateUserParams): Promise<PatchStatusResponse> {
@@ -28,7 +28,7 @@ export class UsersService {
         if(!user) throw ErrorHandler.invalidInfoError('User Not Found');
         await this.userRepository.update({id}, { ...updateUserDetail});
 
-        return { status: 'Updated'}
+        return { status: 'User Updated'}
     }
 
     async deleteUser(id: number): Promise<DeleteStatusResponse> {
@@ -36,6 +36,13 @@ export class UsersService {
         if(!user) throw ErrorHandler.invalidInfoError('User Not Found');        
         await this.userRepository.delete({id});
 
-        return { status: 'Deleted'}
+        return { status: 'User Deleted'}
+    }
+
+    async createUserProfile(id: number, userProfileDetails: CreateUserProfileParams): Promise<PostStatusResponse> {
+        let user = await this.userRepository.findOne({where: {id: id}});
+        if(!user) throw ErrorHandler.invalidInfoError('User Not Found');
+        
+        return {status: 'Profile Created'}
     }
 }
