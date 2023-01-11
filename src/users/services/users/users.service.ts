@@ -17,7 +17,7 @@ export class UsersService {
     ) {}
 
     async findMany() {
-        return await this.userRepository.find({relations: ['profile']});
+        return await this.userRepository.find({relations: ['profile', 'posts']});
     }
 
     async createMany(userDetails: CreateUserParams): Promise<PostStatusResponse> {
