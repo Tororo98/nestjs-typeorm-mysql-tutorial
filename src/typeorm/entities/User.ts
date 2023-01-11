@@ -6,7 +6,7 @@ export class User {
     @PrimaryGeneratedColumn({type: 'bigint'})
     id: number;
 
-    @Column()
+    @Column({unique: true})
     username: string;
 
     @Column()

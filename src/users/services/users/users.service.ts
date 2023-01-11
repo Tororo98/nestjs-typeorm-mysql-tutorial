@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Profile } from 'src/typeorm/entities/Profile';
 import { User } from 'src/typeorm/entities/User';
 import { DeleteStatusResponse, PatchStatusResponse, PostStatusResponse } from 'src/users/schemas/user.response';
 import { ErrorHandler } from 'src/utils/errors/errorhandler';
@@ -10,6 +11,7 @@ import { Repository } from 'typeorm';
 export class UsersService {
     constructor(
         @InjectRepository(User) private userRepository: Repository<User>,
+        @InjectRepository(Profile) private profileRepository: Repository<Profile>,
     ) {}
 
     async findMany() {
@@ -17,6 +19,7 @@ export class UsersService {
     }
 
     async createMany(userDetails: CreateUserParams): Promise<PostStatusResponse> {
+        if(!userDetails.username || !userDetails.password) throw ErrorHandler.invalidInfoError('Invalid Params');
         let newUser = this.userRepository.create({ ...userDetails, createdAt: new Date()});
         await this.userRepository.save(newUser);
 
@@ -41,7 +44,14 @@ export class UsersService {
 
     async createUserProfile(id: number, userProfileDetails: CreateUserProfileParams): Promise<PostStatusResponse> {
         let user = await this.userRepository.findOne({where: {id: id}});
-        if(!user) throw ErrorHandler.invalidInfoError('User Not Found');
+        if(!user) throw new HttpException('User Not Found', HttpStatus.BAD_REQUEST);
+        if(!userProfileDetails.age || !userProfileDetails.dob || !userProfileDetails.firstName) throw ErrorHandler.invalidInfoError('Invalid Params');
+
+        let newProfile = this.profileRepository.create(userProfileDetails);
+        
+        let savedProfile = await this.profileRepository.save(newProfile);
+        user.profile = savedProfile
+        this.userRepository.save(user);
         
         return {status: 'Profile Created'}
     }
