@@ -1,5 +1,4 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { User } from "./User";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({name: 'user_profiles'})
 export class Profile {
@@ -17,7 +16,4 @@ export class Profile {
 
     @Column()
     dob: string;
-
-    @OneToMany(() => User, (user) => user.username)
-    following: User[];
 }

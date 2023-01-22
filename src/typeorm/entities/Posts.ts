@@ -13,5 +13,5 @@ export class Post {
     description: string;
 
     @ManyToOne(() => User, (user) => user.posts)
-    user: User
+    user: User;
 }

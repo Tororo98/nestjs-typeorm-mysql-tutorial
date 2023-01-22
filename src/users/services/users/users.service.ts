@@ -17,7 +17,9 @@ export class UsersService {
     ) {}
 
     async findMany() {
-        return await this.userRepository.find({relations: ['profile', 'posts']});
+        let users = await this.userRepository.find({relations: ['profile', 'posts']});
+        if(users.length==0) throw new HttpException('No Available Information', HttpStatus.BAD_REQUEST);
+        return users;
     }
 
     async createMany(userDetails: CreateUserParams): Promise<PostStatusResponse> {
