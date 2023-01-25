@@ -3,7 +3,7 @@ import { User } from "./User";
 
 @Entity({name: 'user_posts'})
 export class Post {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn({type: 'bigint'})
     id: number;
 
     @Column()

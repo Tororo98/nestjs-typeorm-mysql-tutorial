@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Post } from "./Posts";
 import { Profile } from "./Profile";
 
@@ -25,5 +25,13 @@ export class User {
 
     @OneToMany(() => Post, (post) => post.user)
     posts: Post[];
+    
+    //------------------------------------------------//
+
+    @ManyToMany(() => User, user => user.followers, {})
+    following: User[];
+
+    @ManyToMany(() => User, user => user.following, {})
+    followers: User[]
 
 }

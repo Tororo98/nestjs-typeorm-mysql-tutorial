@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+//import { Followers } from 'src/typeorm/entities/Followers';
 import { Post } from 'src/typeorm/entities/Posts';
 import { Profile } from 'src/typeorm/entities/Profile';
 import { User } from 'src/typeorm/entities/User';
@@ -14,10 +15,14 @@ export class UsersService {
         @InjectRepository(User) private userRepository: Repository<User>,
         @InjectRepository(Profile) private profileRepository: Repository<Profile>,
         @InjectRepository(Post) private postRepository: Repository<Post>,
+        //@InjectRepository(Followers) private followerRepo: Repository<Followers>,
     ) {}
 
     async findMany() {
-        let users = await this.userRepository.find({relations: ['profile', 'posts']});
+        let users = await this.userRepository.find({
+            relations: {
+                profile: true,
+            }});
         if(users.length==0) throw new HttpException('No Available Information', HttpStatus.BAD_REQUEST);
         return users;
     }
