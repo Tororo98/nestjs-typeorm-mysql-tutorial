@@ -7,7 +7,6 @@ import { Post } from './typeorm/entities/Posts';
 import { Profile } from './typeorm/entities/Profile';
 import { User } from './typeorm/entities/User';
 import { UsersModule } from './users/users.module';
-import { FollowersModule } from './followers/followers.module';
 
 @Module({
   imports: [TypeOrmModule.forRoot({
@@ -19,7 +18,7 @@ import { FollowersModule } from './followers/followers.module';
     database: 'nestjs_mysql_tutorial',
     entities: [User, Profile, Post, Followers],
     synchronize: true,
-  }), UsersModule, FollowersModule],
+  }), UsersModule],
   controllers: [AppController,],
   providers: [AppService],
 })
