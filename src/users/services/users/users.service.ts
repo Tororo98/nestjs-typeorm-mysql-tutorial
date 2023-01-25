@@ -1,6 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-//import { Followers } from 'src/typeorm/entities/Followers';
 import { Post } from 'src/typeorm/entities/Posts';
 import { Profile } from 'src/typeorm/entities/Profile';
 import { User } from 'src/typeorm/entities/User';
@@ -22,7 +21,11 @@ export class UsersService {
         let users = await this.userRepository.find({
             relations: {
                 profile: true,
-            }});
+                posts: true,
+                followers: true,
+                following: true,
+            },
+        });
         if(users.length==0) throw new HttpException('No Available Information', HttpStatus.BAD_REQUEST);
         return users;
     }
@@ -77,5 +80,30 @@ export class UsersService {
         await this.postRepository.save(newPost);
 
         return {status: 'Post Created'}
+    }
+
+    async followUser(id: number, myId: number): Promise<PostStatusResponse> {
+        let userToBeFollowed = await this.userRepository.findOne({where: {id: id}});
+        if(!userToBeFollowed) throw new HttpException('User Not Found', HttpStatus.BAD_REQUEST);
+
+        let myUser = await this.userRepository.findOne({where: {id: myId}});
+
+        if(!userToBeFollowed.followers) {
+            userToBeFollowed.followers = [myUser];
+        } else {
+            userToBeFollowed.followers.push(myUser);
+        }
+        if(!myUser.following) {
+            myUser.following = [userToBeFollowed];
+        } else {
+            myUser.following.push(userToBeFollowed);
+        }
+
+        await Promise.all([
+            this.userRepository.save(myUser),
+            this.userRepository.save(userToBeFollowed)
+        ]);
+
+        return {status: 'User ${userToBeFollowed.username} followed'};
     }
 }

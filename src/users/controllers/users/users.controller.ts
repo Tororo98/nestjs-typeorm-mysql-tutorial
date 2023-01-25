@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from 
 import { CreateUserDto } from 'src/users/dtos/CreateUser.dto';
 import { CreateUserPostDto } from 'src/users/dtos/CreateUserPost.dto';
 import { CreateUserProfileDto } from 'src/users/dtos/CreateUserProfile.dto';
+import { FollowUserDto } from 'src/users/dtos/FollowUser.dto';
 import { UpdateUserDto } from 'src/users/dtos/UpdateUser.dto';
 import { PostStatusResponse } from 'src/users/schemas/user.response';
 import { UsersService } from 'src/users/services/users/users.service';
@@ -50,5 +51,13 @@ export class UsersController {
         @Body() createUserPostDto: CreateUserPostDto): Promise<PostStatusResponse> {
 
         return await this.userService.createUserPost(id, createUserPostDto);
+    }
+
+    @Post(':id/follow')
+    async followUser(
+        @Param('id', ParseIntPipe ) id: number,
+        @Body() followUserDto: FollowUserDto
+    ) {
+        return await this.userService.followUser(id, followUserDto.myId)
     }
 }
