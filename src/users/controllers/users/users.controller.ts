@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, ParseIntPipe, Patch, Post, Request } from '@nestjs/common';
 import { CreateUserDto } from 'src/users/dtos/CreateUser.dto';
 import { CreateUserPostDto } from 'src/users/dtos/CreateUserPost.dto';
 import { CreateUserProfileDto } from 'src/users/dtos/CreateUserProfile.dto';
@@ -14,8 +14,9 @@ export class UsersController {
     ) {}
 
     @Get()
-    async getUsers() {
+    async getUsers(@Request() req: Request) {
         let users = await this.userService.findMany();
+        console.log(HttpStatus.OK+" - "+req.url);
         return users;
     }
 

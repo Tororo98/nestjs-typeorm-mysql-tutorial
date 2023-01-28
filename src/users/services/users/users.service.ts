@@ -100,8 +100,7 @@ export class UsersService {
         }
 
         await Promise.all([
-            this.userRepository.save(myUser),
-            this.userRepository.save(userToBeFollowed)
+            this.userRepository.save(myUser)
         ]);
 
         return {status: 'User ${userToBeFollowed.username} followed'};
