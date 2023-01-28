@@ -61,4 +61,12 @@ export class UsersController {
     ) {
         return await this.userService.followUser(id, followUserDto.myId)
     }
+
+    @Delete(':id/unfollow')
+    async unfollowUser(
+        @Param('id', ParseIntPipe ) id: number,
+        @Body() followUserDto: FollowUserDto
+    ) {
+        return await this.userService.unfollowUser(id, followUserDto.myId)
+    }
 }

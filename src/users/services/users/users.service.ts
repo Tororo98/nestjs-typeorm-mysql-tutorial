@@ -14,7 +14,6 @@ export class UsersService {
         @InjectRepository(User) private userRepository: Repository<User>,
         @InjectRepository(Profile) private profileRepository: Repository<Profile>,
         @InjectRepository(Post) private postRepository: Repository<Post>,
-        //@InjectRepository(Followers) private followerRepo: Repository<Followers>,
     ) {}
 
     async findMany() {
@@ -99,10 +98,28 @@ export class UsersService {
             myUser.following.push(userToBeFollowed);
         }
 
-        await Promise.all([
-            this.userRepository.save(myUser)
-        ]);
+        await this.userRepository.save(myUser);
 
-        return {status: 'User ${userToBeFollowed.username} followed'};
+        return {status: 'User '+userToBeFollowed.username+ ' followed'};
+    }
+
+    async unfollowUser(id: number, myId: number) {
+        let userToBeUnFollowed = await this.userRepository.findOne({where: {id: id}, relations: {followers: true}});
+        if(!userToBeUnFollowed) throw new HttpException('User Not Found', HttpStatus.BAD_REQUEST);
+
+        let myUser = await this.userRepository.findOne({where: {id: myId}, relations: {following: true}});
+        
+        if(!userToBeUnFollowed.followers) throw new HttpException('Action not allowed', HttpStatus.BAD_REQUEST);
+        
+        else if(!userToBeUnFollowed.followers.find(user => user.id=myUser.id)) throw new HttpException('You are not following that user', HttpStatus.BAD_REQUEST);
+
+        else {
+            userToBeUnFollowed.followers = userToBeUnFollowed.followers.filter(user => user.id!==myUser.id);
+            myUser.following = myUser.following.filter(user => user.id!==userToBeUnFollowed.id);
+        }
+
+        await this.userRepository.save(userToBeUnFollowed);
+
+        return {status: 'User '+userToBeUnFollowed.username+ ' unfollowed'};
     }
 }
